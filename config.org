@@ -1,2 +1,3 @@
-#+TITLE:Aye Chan's Emacs Config
+#+TITLE:Emacs Config
 #+AUTHOR: Aye Chan San Tun
+#+DESCRIPTION: Aye Chan's personal emacs config
