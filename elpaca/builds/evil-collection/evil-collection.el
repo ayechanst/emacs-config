@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/evil-collection/evil-collection.el
