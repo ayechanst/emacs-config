@@ -83,3 +83,16 @@
 
 ;; Don't install anything. Defer execution of BODY
 (elpaca nil (message "deferred"))
+
+(use-package general
+:config
+(general-evil-setup)
+(general-create-definer ayechan/leader-keys
+:states '(normal insert visual emacs)
+:keymaps 'override
+:prefix "SPC" ;; set leader key
+:global-prefix "M-SPC") 
+
+(ayechan/leader-keys 
+"b" '(:ignore t :wk "buffer")
+"bb" '(switch-to-buffer :wk "Switch buffer"))

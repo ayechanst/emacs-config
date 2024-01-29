@@ -108,10 +108,13 @@
   :keymaps 'override
   :prefix "SPC" ;; set leader key
   :global-prefix "M-SPC") 
-
   (ayechan/leader-keys 
-  "b" '(:ignore t :wk "buffer")
-  "bb" '(switch-to-buffer :wk "Switch buffer"))
+  "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+  "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+  "bk" '(kill-this-buffer :wk "Kill this buffer")
+  "bn" '(next-buffer :wk "Next buffer")
+  "bp" '(previous-buffer :wk "Previous buffer")
+  "br" '(revert-buffer :wk "Reload buffer")))
 
 
 #+end_src
