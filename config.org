@@ -85,11 +85,6 @@
   (setq evil-collection-mode-list '(dashboard dired ibuffer))
   (evil-collection-init))
   (use-package evil-tutor)
-
-
-
-
-
   ;;Turns off elpaca-use-package-mode current declaration
   ;;Note this will cause the declaration to be interpreted immediately (not deferred).
   ;;Useful for configuring built-in emacs features.
@@ -100,21 +95,95 @@
 #+end_src 
 ** General Keybindings
 #+begin_src emacs-lisp
-  (use-package general
+(use-package general
   :config
   (general-evil-setup)
   (general-create-definer ayechan/leader-keys
-  :states '(normal insert visual emacs)
-  :keymaps 'override
-  :prefix "SPC" ;; set leader key
-  :global-prefix "M-SPC") 
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC" ;; set leader key
+    :global-prefix "M-SPC")
+  
   (ayechan/leader-keys 
-  "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
-  "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
-  "bk" '(kill-this-buffer :wk "Kill this buffer")
-  "bn" '(next-buffer :wk "Next buffer")
-  "bp" '(previous-buffer :wk "Previous buffer")
-  "br" '(revert-buffer :wk "Reload buffer")))
+    "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+    ;; "keys" '(elisp-function :wk(which key) "name")
+    "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+    "bk" '(kill-this-buffer :wk "Kill this buffer")
+    "bn" '(next-buffer :wk "Next buffer")
+    "bp" '(previous-buffer :wk "Previous buffer")
+    "br" '(revert-buffer :wk "Reload buffer")))
+#+end_src
 
+** Fonts 
+The different fonts emacs will use
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :font "JetBrains Mono"
+                    :height 110 
+                    :weight 'medium)
+
+(set-face-attribute 'variable-pitch nil
+                    :font "Ubuntu"
+                    :height 120
+                    :weight 'medium)
+
+(set-face-attribute 'fixed-pitch nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+;; Make commented text and keywords italic.
+;; This is working in emacsclient but not in emacs.
+;; Your font must have an italic face available.
+(set-face-attribute 'font-lock-comment-face nil
+                    :slant 'italic)
+
+(set-face-attribute 'font-lock-keyword-face nil
+                    :slant 'italic)
+
+;; Set font on graphical frames
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+;; Uncomment the following line if line spacing needs adjusting
+(setq-default line-spacing 0.12)
 
 #+end_src
+
+* Graphical User Interface Tweaks
+Let's make GNU Emacs look better
+** Disable Menubar, Toolbars, and Scrollbars
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+
+** Display Line Numbers and Truncated Lines
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+#+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

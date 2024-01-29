@@ -85,14 +85,49 @@
 (elpaca nil (message "deferred"))
 
 (use-package general
-:config
-(general-evil-setup)
-(general-create-definer ayechan/leader-keys
-:states '(normal insert visual emacs)
-:keymaps 'override
-:prefix "SPC" ;; set leader key
-:global-prefix "M-SPC") 
+  :config
+  (general-evil-setup)
+  (general-create-definer ayechan/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC" ;; set leader key
+    :global-prefix "M-SPC")
+  
+  (ayechan/leader-keys 
+    "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+    ;; "keys" '(elisp-function :wk(which key) "name")
+    "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+    "bk" '(kill-this-buffer :wk "Kill this buffer")
+    "bn" '(next-buffer :wk "Next buffer")
+    "bp" '(previous-buffer :wk "Previous buffer")
+    "br" '(revert-buffer :wk "Reload buffer")))
 
-(ayechan/leader-keys 
-"b" '(:ignore t :wk "buffer")
-"bb" '(switch-to-buffer :wk "Switch buffer"))
+(set-face-attribute 'default nil
+                    :font "JetBrains Mono"
+                    :height 110 
+                    :weight 'medium)
+
+(set-face-attribute 'variable-pitch nil
+                    :font "Ubuntu"
+                    :height 120
+                    :weight 'medium)
+
+(set-face-attribute 'fixed-pitch nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
+
+;; Make commented text and keywords italic.
+;; This is working in emacsclient but not in emacs.
+;; Your font must have an italic face available.
+(set-face-attribute 'font-lock-comment-face nil
+                    :slant 'italic)
+
+(set-face-attribute 'font-lock-keyword-face nil
+                    :slant 'italic)
+
+;; Set font on graphical frames
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+;; Uncomment the following line if line spacing needs adjusting
+(setq-default line-spacing 0.12)
