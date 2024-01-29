@@ -4,6 +4,19 @@
 #+STARTUP: showeverything
 #+OPTIONS: toc:2
 
+* Table of Contents :toc:
+- [[#important-programs-to-load-first][Important programs to load first]]
+  - [[#elpaca-package-manager][Elpaca Package manager]]
+- [[#evil-mode][Evil Mode]]
+  - [[#general-keybindings][General Keybindings]]
+  - [[#fonts][Fonts]]
+- [[#org-mode][Org Mode]]
+- [[#graphical-user-interface-tweaks][Graphical User Interface Tweaks]]
+  - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
+  - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
+- [[#which-key][Which Key]]
+- [[#add-a-completion-engine-for-m-x][Add a completion engine for m-x]]
+
 * Important programs to load first
 ** Elpaca Package manager
 
@@ -91,64 +104,81 @@
   (use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
 
   ;; Don't install anything. Defer execution of BODY
-  (elpaca nil (message "deferred"))
+  ;; (elpaca nil (message "deferred"))
 #+end_src 
 ** General Keybindings
 #+begin_src emacs-lisp
-(use-package general
-  :config
-  (general-evil-setup)
-  (general-create-definer ayechan/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC" ;; set leader key
-    :global-prefix "M-SPC")
-  
-  (ayechan/leader-keys 
-    "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
-    ;; "keys" '(elisp-function :wk(which key) "name")
-    "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
-    "bk" '(kill-this-buffer :wk "Kill this buffer")
-    "bn" '(next-buffer :wk "Next buffer")
-    "bp" '(previous-buffer :wk "Previous buffer")
-    "br" '(revert-buffer :wk "Reload buffer")))
+  (use-package general
+    :config
+    (general-evil-setup)
+    (general-create-definer ayechan/leader-keys
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC" ;; set leader key
+      :global-prefix "M-SPC")
+
+    (ayechan/leader-keys 
+      "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+      ;; "keys" '(elisp-function :wk(which key) "name")
+      "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+      "bk" '(kill-this-buffer :wk "Kill this buffer")
+      "bn" '(next-buffer :wk "Next buffer")
+      "bp" '(previous-buffer :wk "Previous buffer")
+      "br" '(revert-buffer :wk "Reload buffer")
+
+      "f" '(:ignore t :wk "file") ;; sets the next key
+      "ff" '(find-file :wk "Find file")))
 #+end_src
 
 ** Fonts 
 The different fonts emacs will use
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil
-                    :font "JetBrains Mono"
-                    :height 110 
-                    :weight 'medium)
+  ;; (set-face-attribute 'default nil
+  ;;                     :font "JetBrains Mono"
+  ;;                     :height 110 
+  ;;                     :weight 'medium)
 
-(set-face-attribute 'variable-pitch nil
-                    :font "Ubuntu"
-                    :height 120
-                    :weight 'medium)
+  ;; (set-face-attribute 'variable-pitch nil
+  ;;                     :font "Ubuntu"
+  ;;                     :height 120
+  ;;                     :weight 'medium)
 
-(set-face-attribute 'fixed-pitch nil
-                    :font "JetBrains Mono"
-                    :height 110
-                    :weight 'medium)
+  ;; (set-face-attribute 'fixed-pitch nil
+  ;;                     :font "JetBrains Mono"
+  ;;                     :height 110
+  ;;                     :weight 'medium)
 
-;; Make commented text and keywords italic.
-;; This is working in emacsclient but not in emacs.
-;; Your font must have an italic face available.
-(set-face-attribute 'font-lock-comment-face nil
-                    :slant 'italic)
+  ;; ;; Make commented text and keywords italic.
+  ;; ;; This is working in emacsclient but not in emacs.
+  ;; ;; Your font must have an italic face available.
+  ;; (set-face-attribute 'font-lock-comment-face nil
+  ;;                     :slant 'italic)
 
-(set-face-attribute 'font-lock-keyword-face nil
-                    :slant 'italic)
+  ;; (set-face-attribute 'font-lock-keyword-face nil
+  ;;                     :slant 'italic)
 
-;; Set font on graphical frames
-(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+  ;; ;; Set font on graphical frames
+  ;; (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
 
-;; Uncomment the following line if line spacing needs adjusting
-(setq-default line-spacing 0.12)
+  ;; ;; Uncomment the following line if line spacing needs adjusting
+  ;; (setq-default line-spacing 0.12)
 
 #+end_src
+* Org Mode
 
+Table of Contents
+#+begin_src emacs-lisp
+(use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+Org Bullets
+
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook #'org-indent-mode)
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
 * Graphical User Interface Tweaks
 Let's make GNU Emacs look better
 ** Disable Menubar, Toolbars, and Scrollbars
@@ -164,11 +194,29 @@ Let's make GNU Emacs look better
   (global-visual-line-mode t)
 #+end_src
 
+* Which Key
 
+#+begin_src emacs-lisp
+  (use-package which-key
+  :init 
+  (which-key-mode 1)
+  :config
+  (setq which-key-side-window-location 'bottom
+	which-key-sort-order #'which-key-key-order-alpha
+	which-key-sort-uppercase-first nil
+	which-key-add-column-padding 1
+	which-key-max-display-columns nil
+	which-key-min-display-lines 6
+	which-key-side-window-slot -10
+	which-key-side-window-max-height 0.25
+	which-key-idle-delay 0.8
+	which-key-max-description-length 25
+	which-key-allow-imprecise-window-fit t
+	which-key-separator " → " ))
 
+#+end_src
 
-
-
+* Add a completion engine for m-x
 
 
 
