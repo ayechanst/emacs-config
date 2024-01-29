@@ -9,8 +9,13 @@
   - [[#elpaca-package-manager][Elpaca Package manager]]
 - [[#evil-mode][Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
+  - [[#reloads-emacs][Reloads emacs]]
   - [[#fonts][Fonts]]
 - [[#org-mode][Org Mode]]
+  - [[#table-of-contents][Table of Contents]]
+  - [[#bullets][Bullets]]
+  - [[#disable-electric-indent][Disable Electric Indent]]
+  - [[#source-code-block-shortcut][Source Code block shortcut]]
 - [[#graphical-user-interface-tweaks][Graphical User Interface Tweaks]]
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
@@ -108,28 +113,65 @@
 #+end_src 
 ** General Keybindings
 #+begin_src emacs-lisp
-  (use-package general
-    :config
-    (general-evil-setup)
-    (general-create-definer ayechan/leader-keys
-      :states '(normal insert visual emacs)
-      :keymaps 'override
-      :prefix "SPC" ;; set leader key
-      :global-prefix "M-SPC")
+(use-package general
+  :config
+  (general-evil-setup)
+  (general-create-definer ayechan/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC" ;; set leader key
+    :global-prefix "M-SPC")
 
-    (ayechan/leader-keys 
-      "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
-      ;; "keys" '(elisp-function :wk(which key) "name")
-      "bb" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
-      "bk" '(kill-this-buffer :wk "Kill this buffer")
-      "bn" '(next-buffer :wk "Next buffer")
-      "bp" '(previous-buffer :wk "Previous buffer")
-      "br" '(revert-buffer :wk "Reload buffer")
+  (ayechan/leader-keys 
+    "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+    "b b" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer"))
 
-      "f" '(:ignore t :wk "file") ;; sets the next key
-      "ff" '(find-file :wk "Find file")))
+  (ayechan/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+
+  (ayechan/leader-keys
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "TAB TAB" '(comment-line :wk "Comment lines"))
+
+  (ayechan/leader-keys
+    "w" '(:ignore t :wk "Window")
+    "w d" '(window-delete :wk "Window delete")
+    "w h" '(split-window-vertically :wk "Window vertical split")
+    "w v" '(split-window-horizontally :wk "Window vertical split"))
+
+  (ayechan/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    "h r r" '(reload-init-file :wk "Reload emacs config"))
+
+  (ayechan/leader-keys
+    "e" '(:ignore t :wk "Evaluate")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+  (ayechan/leader-keys
+    "f" '(:ignore t :wk "file") ;; sets the next key
+    "f f" '(find-file :wk "Find file")))
 #+end_src
+** Reloads emacs
+#+begin_src emacs-lisp
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (load-file user-init-file))
 
+#+end_src
 ** Fonts 
 The different fonts emacs will use
 #+begin_src emacs-lisp
@@ -166,7 +208,7 @@ The different fonts emacs will use
 #+end_src
 * Org Mode
 
-Table of Contents
+** Table of Contents
 #+begin_src emacs-lisp
 (use-package toc-org
     :commands toc-org-enable
@@ -174,10 +216,23 @@ Table of Contents
 #+end_src
 Org Bullets
 
+** Bullets
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook #'org-indent-mode)
 (use-package org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+** Disable Electric Indent
+
+#+begin_src emacs-lisp
+(electric-indent-mode -1)
+#+end_src
+
+** Source Code block shortcut
+Write "<s" then press tab to make a source block quickly
+There are also more versions of this < pattern
+#+begin_src emacs-lisp
+(require 'org-tempo)
 #+end_src
 * Graphical User Interface Tweaks
 Let's make GNU Emacs look better
