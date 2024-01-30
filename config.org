@@ -8,6 +8,7 @@
 - [[#important-programs-to-load-first][Important programs to load first]]
   - [[#elpaca-package-manager][Elpaca Package manager]]
 - [[#buffer-move][Buffer Move]]
+- [[#company][Company]]
 - [[#evil-mode][Evil Mode]]
 - [[#general-keybindings][General Keybindings]]
   - [[#reloads-emacs][Reloads emacs]]
@@ -24,8 +25,7 @@
 - [[#diminish][Diminish]]
 - [[#language-support][Language Support]]
   - [[#flycheck][FlyCheck]]
-  - [[#rjsx][RJSX]]
-  - [[#prettier][Prettier]]
+  - [[#javascript][JavaScript]]
   - [[#rust][Rust]]
 - [[#org-mode][Org Mode]]
   - [[#table-of-contents][Table of Contents]]
@@ -155,6 +155,25 @@ one, an error is signaled."
       (select-window other-win))))
 #+end_src
 
+* Company
+This is mega lit no cap
+#+begin_src emacs-lisp
+(use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+#+end_src
 * Evil Mode
 #+begin_src emacs-lisp
   ;; Install a package via the elpaca macro
@@ -456,14 +475,16 @@ Projectile is a project interaction library for Emacs.  It should be noted that 
 “shell-file-name” for Emacs.  I had initially set “fish” as the “shell-file-name” in the Vterm section of this config, but oddly enough I changed it to “bin/sh” 
 and projectile now works as expected, and Vterm still uses “fish” because my default user “sh” on my Linux system is “fish”.
 #+begin_src emacs-lisp
-  (use-package projectile
-    :config 
-    (projectile-mode 1))
+(use-package projectile
+  :diminish
+  :config 
+  (projectile-mode 1))
 #+end_src
 * Rainbow Mode
 #+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :hook org-mode prog-mode)
+(use-package rainbow-mode
+  :diminish
+  :hook org-mode prog-mode)
 #+end_src
 
 * Diminish
@@ -482,42 +503,23 @@ This package makes it so minor modes don't appear on the mode line
   :init (global-flycheck-mode))
 #+end_src
 
-** RJSX
+** JavaScript
+*** RJSX Mode
+This give syntax highlighting which is important.
+#+begin_src emacs-lisp
+(use-package rjsx-mode 
+  :ensure t)
+(add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+#+end_src
+*** Tide
+#+begin_src emacs-lisp
+
+#+end_src
+*** Prettier
 #+begin_src emacs-lisp
 
 #+end_src
 
-** Prettier
-Formats code on save:
-#+begin_src emacs-lisp
-
-;; (use-package prettier-js
-;;     (setq prettier-js-args '("--trailing-comma" "all"
-;;                              "--single-quote" "true"
-;;                              "--print-width" "80"
-;;                              "--tab-width" "2"
-;;                              "--use-tabs" "false")))
-
-#+end_src
-This will turn on auto-formatting in all relevant buffers:
-#+begin_src emacs-lisp
-
-;; (defun my/enable-prettier-js-mode ()
-;;   "Enable prettier-js-mode for relevant buffers."
-;;   (when (or (derived-mode-p 'typescript-mode)
-;;             (derived-mode-p 'web-mode))
-;;     (prettier-js-mode)))
-
-;; ;; Enable prettier-js-mode for specific modes
-;; (add-hook 'typescript-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'web-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'js2-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'rjsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
-
-#+end_src
 ** Rust
 LSP for rust not much more to say.
 #+begin_src emacs-lisp

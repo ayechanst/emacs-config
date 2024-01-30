@@ -104,6 +104,22 @@ one, an error is signaled."
       (set-window-buffer other-win buf-this-buf)
       (select-window other-win))))
 
+(use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+
 ;; Install a package via the elpaca macro
 ;; See the "recipes" section of the manual for more details.
 
@@ -372,10 +388,12 @@ one, an error is signaled."
                                'ivy-rich-switch-buffer-transformer))
 
 (use-package projectile
+  :diminish
   :config 
   (projectile-mode 1))
 
 (use-package rainbow-mode
+  :diminish
   :hook org-mode prog-mode)
 
 (use-package diminish)
@@ -386,29 +404,13 @@ one, an error is signaled."
   :diminish
   :init (global-flycheck-mode))
 
+(use-package rjsx-mode 
+  :ensure t)
+(add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
 
 
-;; (use-package prettier-js
-;;     (setq prettier-js-args '("--trailing-comma" "all"
-;;                              "--single-quote" "true"
-;;                              "--print-width" "80"
-;;                              "--tab-width" "2"
-;;                              "--use-tabs" "false")))
 
-;; (defun my/enable-prettier-js-mode ()
-;;   "Enable prettier-js-mode for relevant buffers."
-;;   (when (or (derived-mode-p 'typescript-mode)
-;;             (derived-mode-p 'web-mode))
-;;     (prettier-js-mode)))
 
-;; ;; Enable prettier-js-mode for specific modes
-;; (add-hook 'typescript-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'web-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'js2-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'rjsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
-;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
 
 ;; (use-package lsp-mode
 ;;   :ensure
