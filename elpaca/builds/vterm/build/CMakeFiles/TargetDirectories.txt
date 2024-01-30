@@ -1,0 +1,5 @@
+/home/santun/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/vterm-module.dir
+/home/santun/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/libvterm.dir
+/home/santun/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/run.dir
+/home/santun/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/edit_cache.dir
+/home/santun/.config/emacs/elpaca/builds/vterm/build/CMakeFiles/rebuild_cache.dir
