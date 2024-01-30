@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/rainbow-mode/rainbow-mode.el

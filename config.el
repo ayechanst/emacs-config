@@ -171,6 +171,10 @@ one, an error is signaled."
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
+(ayechan/leader-keys 
+     "o" '(:ignore t :wk "Open")
+     "o t" '(vterm-toggle :wk "Toggle vterm"))
+
   (ayechan/leader-keys
     "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
     "f r" '(counsel-recentf :wk "Find recent file")
@@ -329,6 +333,9 @@ one, an error is signaled."
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 
+(use-package rainbow-mode
+  :hook org-mode prog-mode)
+
 (use-package toc-org
     :commands toc-org-enable
     :init (add-hook 'org-mode-hook 'toc-org-enable))
@@ -352,6 +359,9 @@ one, an error is signaled."
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'soft-charcoal t)
 
 (use-package which-key
 :init 

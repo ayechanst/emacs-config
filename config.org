@@ -18,6 +18,7 @@
   - [[#vterm][Vterm]]
   - [[#vterm-toggle][Vterm Toggle]]
 - [[#ivy-counsel][Ivy (Counsel)]]
+- [[#rainbow-mode][Rainbow Mode]]
 - [[#org-mode][Org Mode]]
   - [[#table-of-contents][Table of Contents]]
   - [[#bullets][Bullets]]
@@ -27,6 +28,7 @@
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars, and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
   - [[#zooming-in-and-out][Zooming In and Out]]
+- [[#theme][Theme]]
 - [[#which-key][Which Key]]
 
 * Important programs to load first
@@ -402,6 +404,11 @@ This is vterm
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 #+end_src
+* Rainbow Mode
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :hook org-mode prog-mode)
+#+end_src
                 
 * Org Mode
 
@@ -453,6 +460,11 @@ Let's make GNU Emacs look better
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+* Theme
+#+begin_src emacs-lisp
+  (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+  (load-theme 'soft-charcoal t)
 #+end_src
 
 * Which Key
