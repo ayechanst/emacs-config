@@ -149,108 +149,146 @@ one, an error is signaled."
 ;; (elpaca nil (message "deferred"))
 
 (use-package general
-  :config
-  (general-evil-setup)
-  (general-create-definer ayechan/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC" ;; set leader key
-    :global-prefix "M-SPC")
+    :config
+    (general-evil-setup)
+    (general-create-definer ayechan/leader-keys
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC" ;; set leader key
+      :global-prefix "M-SPC")
+
+    (ayechan/leader-keys 
+      "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
+      "b b" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+      "b k" '(kill-this-buffer :wk "Kill this buffer")
+      "b i" '(ibuffer :wk "Ibuffer")
+      "b n" '(next-buffer :wk "Next buffer")
+      "b p" '(previous-buffer :wk "Previous buffer")
+      "b r" '(revert-buffer :wk "Reload buffer"))
+
+    (ayechan/leader-keys
+      "t" '(:ignore t :wk "Toggle")
+      "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+      "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
   (ayechan/leader-keys 
-    "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
-    "b b" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
-    "b k" '(kill-this-buffer :wk "Kill this buffer")
-    "b i" '(ibuffer :wk "Ibuffer")
-    "b n" '(next-buffer :wk "Next buffer")
-    "b p" '(previous-buffer :wk "Previous buffer")
-    "b r" '(revert-buffer :wk "Reload buffer"))
+       "o" '(:ignore t :wk "Open")
+       "o t" '(vterm-toggle :wk "Toggle vterm"))
+
+    (ayechan/leader-keys
+      "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+      "f r" '(counsel-recentf :wk "Find recent file")
+      "TAB TAB" '(comment-line :wk "Comment lines"))
+
+    (ayechan/leader-keys
+      "h" '(:ignore t :wk "Help")
+      "h f" '(describe-function :wk "Describe function")
+      "h v" '(describe-variable :wk "Describe variable")
+      "h r r" '(reload-init-file :wk "Reload emacs config"))
+
+(ayechan/leader-keys
+    "m" '(:ignore t :wk "Org")
+    "m a" '(org-agenda :wk "Org agenda")
+    "m e" '(org-export-dispatch :wk "Org export dispatch")
+    "m i" '(org-toggle-item :wk "Org toggle item")
+    "m t" '(org-todo :wk "Org todo")
+    "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m T" '(org-todo-list :wk "Org todo list"))
 
   (ayechan/leader-keys
-    "t" '(:ignore t :wk "Toggle")
-    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
-
-(ayechan/leader-keys 
-     "o" '(:ignore t :wk "Open")
-     "o t" '(vterm-toggle :wk "Toggle vterm"))
+    "m b" '(:ignore t :wk "Tables")
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
 
   (ayechan/leader-keys
-    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
-    "f r" '(counsel-recentf :wk "Find recent file")
-    "TAB TAB" '(comment-line :wk "Comment lines"))
+    "m d" '(:ignore t :wk "Date/deadline")
+    "m d t" '(org-time-stamp :wk "Org time stamp"))
 
-  (ayechan/leader-keys
-    "h" '(:ignore t :wk "Help")
-    "h f" '(describe-function :wk "Describe function")
-    "h v" '(describe-variable :wk "Describe variable")
-    "h r r" '(reload-init-file :wk "Reload emacs config"))
+    (ayechan/leader-keys
+        "w" '(:ignore t :wk "Windows")
+        ;; Window splits
+        "w d" '(evil-window-delete :wk "Close window")
+        "w n" '(evil-window-new :wk "New window")
+        "w s" '(evil-window-split :wk "Horizontal split window")
+        "w v" '(evil-window-vsplit :wk "Vertical split window")
+        ;; Window motions
+        "w h" '(evil-window-left :wk "Window left")
+        "w j" '(evil-window-down :wk "Window down")
+        "w k" '(evil-window-up :wk "Window up")
+        "w l" '(evil-window-right :wk "Window right")
+        "w w" '(evil-window-next :wk "Goto next window")
+        ;; Move Windows
+        "w H" '(buf-move-left :wk "Buffer move left")
+        "w J" '(buf-move-down :wk "Buffer move down")
+        "w K" '(buf-move-up :wk "Buffer move up")
+        "w L" '(buf-move-right :wk "Buffer move right"))
 
-  (ayechan/leader-keys
-      "w" '(:ignore t :wk "Windows")
-      ;; Window splits
-      "w d" '(evil-window-delete :wk "Close window")
-      "w n" '(evil-window-new :wk "New window")
-      "w s" '(evil-window-split :wk "Horizontal split window")
-      "w v" '(evil-window-vsplit :wk "Vertical split window")
-      ;; Window motions
-      "w h" '(evil-window-left :wk "Window left")
-      "w j" '(evil-window-down :wk "Window down")
-      "w k" '(evil-window-up :wk "Window up")
-      "w l" '(evil-window-right :wk "Window right")
-      "w w" '(evil-window-next :wk "Goto next window")
-      ;; Move Windows
-      "w H" '(buf-move-left :wk "Buffer move left")
-      "w J" '(buf-move-down :wk "Buffer move down")
-      "w K" '(buf-move-up :wk "Buffer move up")
-      "w L" '(buf-move-right :wk "Buffer move right"))
+    (ayechan/leader-keys
+      "e" '(:ignore t :wk "Evaluate")
+      "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+      "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+      "e e" '(eval-expression :wk "Evaluate and elisp expression")
+      "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+      "e r" '(eval-region :wk "Evaluate elisp in region"))
 
-  (ayechan/leader-keys
-    "e" '(:ignore t :wk "Evaluate")
-    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-    "e e" '(eval-expression :wk "Evaluate and elisp expression")
-    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-    "e r" '(eval-region :wk "Evaluate elisp in region"))
-
-  (ayechan/leader-keys
-    "f" '(:ignore t :wk "file") ;; sets the next key
-    "f f" '(find-file :wk "Find file")))
+    (ayechan/leader-keys
+      "f" '(:ignore t :wk "file") ;; sets the next key
+      "f f" '(find-file :wk "Find file")))
 
 (defun reload-init-file ()
   (interactive)
   (load-file user-init-file)
   (load-file user-init-file))
 
-;; (set-face-attribute 'default nil
-;;                     :font "JetBrains Mono"
-;;                     :height 110 
-;;                     :weight 'medium)
+(use-package dashboard
+  :ensure t 
+  :init
+  (setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Happiness is the feeling that power increases - that resistance is being overcome.")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;;(setq dashboard-startup-banner "/home/santun/.config/emacs/images/cartoon-gnu.jpg")  ;; use custom image as banner
+  (setq dashboard-center-content t) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook))
 
-;; (set-face-attribute 'variable-pitch nil
-;;                     :font "Ubuntu"
-;;                     :height 120
-;;                     :weight 'medium)
+(set-face-attribute 'default nil
+                    :font "JetBrains Mono"
+                    :height 110 
+                    :weight 'medium)
 
-;; (set-face-attribute 'fixed-pitch nil
-;;                     :font "JetBrains Mono"
-;;                     :height 110
-;;                     :weight 'medium)
+(set-face-attribute 'variable-pitch nil
+                    :font "Ubuntu"
+                    :height 120
+                    :weight 'medium)
 
-;; ;; Make commented text and keywords italic.
-;; ;; This is working in emacsclient but not in emacs.
-;; ;; Your font must have an italic face available.
-;; (set-face-attribute 'font-lock-comment-face nil
-;;                     :slant 'italic)
+(set-face-attribute 'fixed-pitch nil
+                    :font "JetBrains Mono"
+                    :height 110
+                    :weight 'medium)
 
-;; (set-face-attribute 'font-lock-keyword-face nil
-;;                     :slant 'italic)
+;; Make commented text and keywords italic.
+;; This is working in emacsclient but not in emacs.
+;; Your font must have an italic face available.
+(set-face-attribute 'font-lock-comment-face nil
+                    :slant 'italic)
 
-;; ;; Set font on graphical frames
-;; (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+(set-face-attribute 'font-lock-keyword-face nil
+                    :slant 'italic)
 
-;; ;; Uncomment the following line if line spacing needs adjusting
-;; (setq-default line-spacing 0.12)
+;; Set font on graphical frames
+(add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+
+;; Uncomment the following line if line spacing needs adjusting
+ (setq-default line-spacing 0.12)
 
 (use-package all-the-icons
   :ensure t
@@ -333,8 +371,72 @@ one, an error is signaled."
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 
+(use-package projectile
+  :config 
+  (projectile-mode 1))
+
 (use-package rainbow-mode
   :hook org-mode prog-mode)
+
+(use-package diminish)
+
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init (global-flycheck-mode))
+
+
+
+;; (use-package prettier-js
+;;     (setq prettier-js-args '("--trailing-comma" "all"
+;;                              "--single-quote" "true"
+;;                              "--print-width" "80"
+;;                              "--tab-width" "2"
+;;                              "--use-tabs" "false")))
+
+;; (defun my/enable-prettier-js-mode ()
+;;   "Enable prettier-js-mode for relevant buffers."
+;;   (when (or (derived-mode-p 'typescript-mode)
+;;             (derived-mode-p 'web-mode))
+;;     (prettier-js-mode)))
+
+;; ;; Enable prettier-js-mode for specific modes
+;; (add-hook 'typescript-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'web-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'js2-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'rjsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+
+;; (use-package lsp-mode
+;;   :ensure
+;;   :commands lsp
+;;   :custom
+;;   ;; what to use when checking on-save. "check" is default, I prefer clippy
+;;   (lsp-rust-analyzer-cargo-watch-command "clippy")
+;;   (lsp-eldoc-render-all t)
+;;   (lsp-idle-delay 0.6)
+;;   ;; enable / disable the hints as you prefer:
+;;   (lsp-inlay-hint-enable t)
+;;   ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+;;   (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+;;   (lsp-rust-analyzer-display-chaining-hints t)
+;;   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+;;   (lsp-rust-analyzer-display-closure-return-type-hints t)
+;;   (lsp-rust-analyzer-display-parameter-hints nil)
+;;   (lsp-rust-analyzer-display-reborrow-hints nil)
+;;   :config
+;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+;; (use-package lsp-ui
+;;   :ensure
+;;   :commands lsp-ui-mode
+;;   :custom
+;;   (lsp-ui-peek-always-show t)
+;;   (lsp-ui-sideline-show-hover t)
+;;   (lsp-ui-doc-enable nil))
 
 (use-package toc-org
     :commands toc-org-enable
@@ -345,6 +447,7 @@ one, an error is signaled."
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 (electric-indent-mode -1)
+(setq org-edit-src-content-indentation 0)
 
 (require 'org-tempo)
 
@@ -366,6 +469,7 @@ one, an error is signaled."
 (use-package which-key
 :init 
 (which-key-mode 1)
+:diminish
 :config
 (setq which-key-side-window-location 'bottom
       which-key-sort-order #'which-key-key-order-alpha
@@ -373,9 +477,9 @@ one, an error is signaled."
       which-key-add-column-padding 1
       which-key-max-display-columns nil
       which-key-min-display-lines 6
-      which-key-side-window-slot -10
+
       which-key-side-window-max-height 0.25
       which-key-idle-delay 0.8
       which-key-max-description-length 25
-      which-key-allow-imprecise-window-fit t
+      which-key-allow-imprecise-window-fit nil
       which-key-separator " → " ))

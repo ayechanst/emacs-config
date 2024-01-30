@@ -1,0 +1,1 @@
+("~/projects/house-dao/" "~/.config/emacs/")

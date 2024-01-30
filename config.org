@@ -11,6 +11,7 @@
 - [[#evil-mode][Evil Mode]]
 - [[#general-keybindings][General Keybindings]]
   - [[#reloads-emacs][Reloads emacs]]
+- [[#dashboard][Dashboard]]
 - [[#fonts][Fonts]]
   - [[#all-the-icons][All the Icons]]
 - [[#shells-and-terminal][Shells and Terminal]]
@@ -18,7 +19,14 @@
   - [[#vterm][Vterm]]
   - [[#vterm-toggle][Vterm Toggle]]
 - [[#ivy-counsel][Ivy (Counsel)]]
+- [[#projectile][Projectile]]
 - [[#rainbow-mode][Rainbow Mode]]
+- [[#diminish][Diminish]]
+- [[#language-support][Language Support]]
+  - [[#flycheck][FlyCheck]]
+  - [[#rjsx][RJSX]]
+  - [[#prettier][Prettier]]
+  - [[#rust][Rust]]
 - [[#org-mode][Org Mode]]
   - [[#table-of-contents][Table of Contents]]
   - [[#bullets][Bullets]]
@@ -233,6 +241,23 @@ one, an error is signaled."
       "h v" '(describe-variable :wk "Describe variable")
       "h r r" '(reload-init-file :wk "Reload emacs config"))
 
+(ayechan/leader-keys
+    "m" '(:ignore t :wk "Org")
+    "m a" '(org-agenda :wk "Org agenda")
+    "m e" '(org-export-dispatch :wk "Org export dispatch")
+    "m i" '(org-toggle-item :wk "Org toggle item")
+    "m t" '(org-todo :wk "Org todo")
+    "m B" '(org-babel-tangle :wk "Org babel tangle")
+    "m T" '(org-todo-list :wk "Org todo list"))
+
+  (ayechan/leader-keys
+    "m b" '(:ignore t :wk "Tables")
+    "m b -" '(org-table-insert-hline :wk "Insert hline in table"))
+
+  (ayechan/leader-keys
+    "m d" '(:ignore t :wk "Date/deadline")
+    "m d t" '(org-time-stamp :wk "Org time stamp"))
+
     (ayechan/leader-keys
         "w" '(:ignore t :wk "Windows")
         ;; Window splits
@@ -270,40 +295,62 @@ one, an error is signaled."
   (interactive)
   (load-file user-init-file)
   (load-file user-init-file))
-
+#+end_src
+* Dashboard
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t 
+  :init
+  (setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Happiness is the feeling that power increases - that resistance is being overcome.")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;;(setq dashboard-startup-banner "/home/santun/.config/emacs/images/cartoon-gnu.jpg")  ;; use custom image as banner
+  (setq dashboard-center-content t) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook))
 #+end_src
 * Fonts 
 The different fonts emacs will use
 #+begin_src emacs-lisp
-  ;; (set-face-attribute 'default nil
-  ;;                     :font "JetBrains Mono"
-  ;;                     :height 110 
-  ;;                     :weight 'medium)
+  (set-face-attribute 'default nil
+                      :font "JetBrains Mono"
+                      :height 110 
+                      :weight 'medium)
 
-  ;; (set-face-attribute 'variable-pitch nil
-  ;;                     :font "Ubuntu"
-  ;;                     :height 120
-  ;;                     :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+                      :font "Ubuntu"
+                      :height 120
+                      :weight 'medium)
 
-  ;; (set-face-attribute 'fixed-pitch nil
-  ;;                     :font "JetBrains Mono"
-  ;;                     :height 110
-  ;;                     :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+                      :font "JetBrains Mono"
+                      :height 110
+                      :weight 'medium)
 
-  ;; ;; Make commented text and keywords italic.
-  ;; ;; This is working in emacsclient but not in emacs.
-  ;; ;; Your font must have an italic face available.
-  ;; (set-face-attribute 'font-lock-comment-face nil
-  ;;                     :slant 'italic)
+  ;; Make commented text and keywords italic.
+  ;; This is working in emacsclient but not in emacs.
+  ;; Your font must have an italic face available.
+  (set-face-attribute 'font-lock-comment-face nil
+                      :slant 'italic)
 
-  ;; (set-face-attribute 'font-lock-keyword-face nil
-  ;;                     :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+                      :slant 'italic)
 
-  ;; ;; Set font on graphical frames
-  ;; (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
+  ;; Set font on graphical frames
+  (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
 
-  ;; ;; Uncomment the following line if line spacing needs adjusting
-  ;; (setq-default line-spacing 0.12)
+  ;; Uncomment the following line if line spacing needs adjusting
+   (setq-default line-spacing 0.12)
 
 #+end_src
 
@@ -404,12 +451,106 @@ This is vterm
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 #+end_src
+* Projectile
+Projectile is a project interaction library for Emacs.  It should be noted that many projectile commands do not work if you have set “fish” as the 
+“shell-file-name” for Emacs.  I had initially set “fish” as the “shell-file-name” in the Vterm section of this config, but oddly enough I changed it to “bin/sh” 
+and projectile now works as expected, and Vterm still uses “fish” because my default user “sh” on my Linux system is “fish”.
+#+begin_src emacs-lisp
+  (use-package projectile
+    :config 
+    (projectile-mode 1))
+#+end_src
 * Rainbow Mode
 #+begin_src emacs-lisp
   (use-package rainbow-mode
     :hook org-mode prog-mode)
 #+end_src
-                
+
+* Diminish
+This package makes it so minor modes don't appear on the mode line
+#+begin_src emacs-lisp
+(use-package diminish)
+#+end_src
+
+* Language Support
+** FlyCheck
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init (global-flycheck-mode))
+#+end_src
+
+** RJSX
+#+begin_src emacs-lisp
+
+#+end_src
+
+** Prettier
+Formats code on save:
+#+begin_src emacs-lisp
+
+;; (use-package prettier-js
+;;     (setq prettier-js-args '("--trailing-comma" "all"
+;;                              "--single-quote" "true"
+;;                              "--print-width" "80"
+;;                              "--tab-width" "2"
+;;                              "--use-tabs" "false")))
+
+#+end_src
+This will turn on auto-formatting in all relevant buffers:
+#+begin_src emacs-lisp
+
+;; (defun my/enable-prettier-js-mode ()
+;;   "Enable prettier-js-mode for relevant buffers."
+;;   (when (or (derived-mode-p 'typescript-mode)
+;;             (derived-mode-p 'web-mode))
+;;     (prettier-js-mode)))
+
+;; ;; Enable prettier-js-mode for specific modes
+;; (add-hook 'typescript-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'web-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'js2-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'rjsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+;; (add-hook 'typescript-tsx-mode-hook #'my/enable-prettier-js-mode)
+
+#+end_src
+** Rust
+LSP for rust not much more to say.
+#+begin_src emacs-lisp
+
+;; (use-package lsp-mode
+;;   :ensure
+;;   :commands lsp
+;;   :custom
+;;   ;; what to use when checking on-save. "check" is default, I prefer clippy
+;;   (lsp-rust-analyzer-cargo-watch-command "clippy")
+;;   (lsp-eldoc-render-all t)
+;;   (lsp-idle-delay 0.6)
+;;   ;; enable / disable the hints as you prefer:
+;;   (lsp-inlay-hint-enable t)
+;;   ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+;;   (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+;;   (lsp-rust-analyzer-display-chaining-hints t)
+;;   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+;;   (lsp-rust-analyzer-display-closure-return-type-hints t)
+;;   (lsp-rust-analyzer-display-parameter-hints nil)
+;;   (lsp-rust-analyzer-display-reborrow-hints nil)
+;;   :config
+;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+;; (use-package lsp-ui
+;;   :ensure
+;;   :commands lsp-ui-mode
+;;   :custom
+;;   (lsp-ui-peek-always-show t)
+;;   (lsp-ui-sideline-show-hover t)
+;;   (lsp-ui-doc-enable nil))
+
+#+end_src
 * Org Mode
 
 ** Table of Contents
@@ -430,6 +571,7 @@ Org Bullets
 
 #+begin_src emacs-lisp
 (electric-indent-mode -1)
+(setq org-edit-src-content-indentation 0)
 #+end_src
 
 ** Source Code block shortcut
@@ -470,22 +612,23 @@ Let's make GNU Emacs look better
 * Which Key
 
 #+begin_src emacs-lisp
-  (use-package which-key
-  :init 
-  (which-key-mode 1)
-  :config
-  (setq which-key-side-window-location 'bottom
-	which-key-sort-order #'which-key-key-order-alpha
-	which-key-sort-uppercase-first nil
-	which-key-add-column-padding 1
-	which-key-max-display-columns nil
-	which-key-min-display-lines 6
-	which-key-side-window-slot -10
-	which-key-side-window-max-height 0.25
-	which-key-idle-delay 0.8
-	which-key-max-description-length 25
-	which-key-allow-imprecise-window-fit t
-	which-key-separator " → " ))
+(use-package which-key
+:init 
+(which-key-mode 1)
+:diminish
+:config
+(setq which-key-side-window-location 'bottom
+      which-key-sort-order #'which-key-key-order-alpha
+      which-key-sort-uppercase-first nil
+      which-key-add-column-padding 1
+      which-key-max-display-columns nil
+      which-key-min-display-lines 6
+
+      which-key-side-window-max-height 0.25
+      which-key-idle-delay 0.8
+      which-key-max-description-length 25
+      which-key-allow-imprecise-window-fit nil
+      which-key-separator " → " ))
 
 #+end_src
 
