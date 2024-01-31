@@ -1,40 +1,3 @@
-(defvar elpaca-installer-version 0.6)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-	(if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		 ((zerop (call-process "git" nil buffer t "clone"
-				       (plist-get order :repo) repo)))
-		 ((zerop (call-process "git" nil buffer t "checkout"
-				       (or (plist-get order :ref) "--"))))
-		 (emacs (concat invocation-directory invocation-name))
-		 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-				       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		 ((require 'elpaca))
-		 ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
-
 (require 'windmove)
 
 ;;;###autoload
@@ -120,29 +83,61 @@ one, an error is signaled."
   :diminish
   :hook (company-mode . company-box-mode))
 
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+			      :ref nil
+			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+			      :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+	(if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		 ((zerop (call-process "git" nil buffer t "clone"
+				       (plist-get order :repo) repo)))
+		 ((zerop (call-process "git" nil buffer t "checkout"
+				       (or (plist-get order :ref) "--"))))
+		 (emacs (concat invocation-directory invocation-name))
+		 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+				       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		 ((require 'elpaca))
+		 ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
 ;; Install a package via the elpaca macro
 ;; See the "recipes" section of the manual for more details.
-
 ;; (elpaca example-package)
-
 ;; Install use-package support
 (elpaca elpaca-use-package
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
-
 ;; Block until current queue processed.
 (elpaca-wait)
-
 ;;When installing a package which modifies a form used at the top-level
 ;;(e.g. a package which adds a use-package key word),
 ;;use `elpaca-wait' to block until that package has been installed/configured.
 ;;For example:
 ;;(use-package general :demand t)
 ;;(elpaca-wait)
-
-
 ;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
      :init
@@ -164,45 +159,49 @@ one, an error is signaled."
 ;; Don't install anything. Defer execution of BODY
 ;; (elpaca nil (message "deferred"))
 
+(with-eval-after-load 'evil
+  (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up))
+
 (use-package general
-    :config
-    (general-evil-setup)
-    (general-create-definer ayechan/leader-keys
-      :states '(normal insert visual emacs)
-      :keymaps 'override
-      :prefix "SPC" ;; set leader key
-      :global-prefix "M-SPC")
-
-    (ayechan/leader-keys 
-      "b" '(:ignore t :wk "buffer") ;; sets the next key (in this case b)
-      "b b" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
-      "b k" '(kill-this-buffer :wk "Kill this buffer")
-      "b i" '(ibuffer :wk "Ibuffer")
-      "b n" '(next-buffer :wk "Next buffer")
-      "b p" '(previous-buffer :wk "Previous buffer")
-      "b r" '(revert-buffer :wk "Reload buffer"))
-
-    (ayechan/leader-keys
-      "t" '(:ignore t :wk "Toggle")
-      "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-      "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+  :config
+  (general-evil-setup)
+  
+  (general-create-definer ayechan/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC" ;; set leader key
+    :global-prefix "M-SPC")
 
   (ayechan/leader-keys 
-       "o" '(:ignore t :wk "Open")
-       "o t" '(vterm-toggle :wk "Toggle vterm"))
+    "b" '(:ignore t :wk "Buffer") ;; sets the next key (in this case b)
+    "b b" '(switch-to-buffer :wk "Switch buffer") ;; now here is what all the b's do
+    "b k" '(kill-this-buffer :wk "Kill this buffer")
+    "b i" '(ibuffer :wk "Ibuffer")
+    "b n" '(next-buffer :wk "Next buffer")
+    "b p" '(previous-buffer :wk "Previous buffer")
+    "b r" '(revert-buffer :wk "Reload buffer"))
 
-    (ayechan/leader-keys
-      "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
-      "f r" '(counsel-recentf :wk "Find recent file")
-      "TAB TAB" '(comment-line :wk "Comment lines"))
+  (ayechan/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
-    (ayechan/leader-keys
-      "h" '(:ignore t :wk "Help")
-      "h f" '(describe-function :wk "Describe function")
-      "h v" '(describe-variable :wk "Describe variable")
-      "h r r" '(reload-init-file :wk "Reload emacs config"))
+  (ayechan/leader-keys 
+    "o" '(:ignore t :wk "Open")
+    "o t" '(vterm-toggle :wk "Toggle vterm"))
 
-(ayechan/leader-keys
+  (ayechan/leader-keys
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "f r" '(counsel-recentf :wk "Find recent file")
+    "TAB TAB" '(comment-line :wk "Comment lines"))
+
+  (ayechan/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    "h r r" '(reload-init-file :wk "Reload emacs config"))
+
+  (ayechan/leader-keys
     "m" '(:ignore t :wk "Org")
     "m a" '(org-agenda :wk "Org agenda")
     "m e" '(org-export-dispatch :wk "Org export dispatch")
@@ -219,41 +218,48 @@ one, an error is signaled."
     "m d" '(:ignore t :wk "Date/deadline")
     "m d t" '(org-time-stamp :wk "Org time stamp"))
 
-    (ayechan/leader-keys
-        "w" '(:ignore t :wk "Windows")
-        ;; Window splits
-        "w d" '(evil-window-delete :wk "Close window")
-        "w n" '(evil-window-new :wk "New window")
-        "w s" '(evil-window-split :wk "Horizontal split window")
-        "w v" '(evil-window-vsplit :wk "Vertical split window")
-        ;; Window motions
-        "w h" '(evil-window-left :wk "Window left")
-        "w j" '(evil-window-down :wk "Window down")
-        "w k" '(evil-window-up :wk "Window up")
-        "w l" '(evil-window-right :wk "Window right")
-        "w w" '(evil-window-next :wk "Goto next window")
-        ;; Move Windows
-        "w H" '(buf-move-left :wk "Buffer move left")
-        "w J" '(buf-move-down :wk "Buffer move down")
-        "w K" '(buf-move-up :wk "Buffer move up")
-        "w L" '(buf-move-right :wk "Buffer move right"))
+  (ayechan/leader-keys
+    "w" '(:ignore t :wk "Windows")
+    ;; Window splits
+    "w d" '(evil-window-delete :wk "Close window")
+    "w n" '(evil-window-new :wk "New window")
+    "w s" '(evil-window-split :wk "Horizontal split window")
+    "w v" '(evil-window-vsplit :wk "Vertical split window")
+    ;; Window motions
+    "w h" '(evil-window-left :wk "Window left")
+    "w j" '(evil-window-down :wk "Window down")
+    "w k" '(evil-window-up :wk "Window up")
+    "w l" '(evil-window-right :wk "Window right")
+    "w w" '(evil-window-next :wk "Goto next window")
+    ;; Move Windows
+    "w H" '(buf-move-left :wk "Buffer move left")
+    "w J" '(buf-move-down :wk "Buffer move down")
+    "w K" '(buf-move-up :wk "Buffer move up")
+    "w L" '(buf-move-right :wk "Buffer move right"))
 
-    (ayechan/leader-keys
-      "e" '(:ignore t :wk "Evaluate")
-      "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-      "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-      "e e" '(eval-expression :wk "Evaluate and elisp expression")
-      "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-      "e r" '(eval-region :wk "Evaluate elisp in region"))
+  (ayechan/leader-keys
+    "e" '(:ignore t :wk "Evaluate")
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
 
-    (ayechan/leader-keys
-      "f" '(:ignore t :wk "file") ;; sets the next key
-      "f f" '(find-file :wk "Find file")))
+  (ayechan/leader-keys
+    "f" '(:ignore t :wk "File") ;; sets the next key
+    "f f" '(find-file :wk "Find file")))
 
 (defun reload-init-file ()
   (interactive)
   (load-file user-init-file)
   (load-file user-init-file))
+
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
 (use-package dashboard
   :ensure t 
@@ -275,6 +281,15 @@ one, an error is signaled."
                                     (bookmarks . "book")))
   :config
   (dashboard-setup-startup-hook))
+
+(use-package diminish)
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono"
@@ -306,57 +321,25 @@ one, an error is signaled."
 ;; Uncomment the following line if line spacing needs adjusting
  (setq-default line-spacing 0.12)
 
-(use-package all-the-icons
-  :ensure t
-  :if (display-graphic-p))
+(setq redisplay-dont-pause t
+  scroll-margin 1
+  scroll-step 1
+  scroll-conservatively 10000
+  scroll-preserve-screen-position 1)
+(setq scroll-conservatively 10)
+(setq scroll-margin 4)
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'soft-charcoal t)
 
-(use-package eshell-syntax-highlighting
-  :after esh-mode
-  :config
-  (eshell-syntax-highlighting-global-mode +1))
-
-;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
-;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
-;; eshell-aliases-file -- sets an aliases file for the eshell.
-  
-(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
-      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
-      eshell-history-size 5000
-      eshell-buffer-maximum-lines 5000
-      eshell-hist-ignoredups t
-      eshell-scroll-to-bottom-on-input t
-      eshell-destroy-buffer-when-process-dies t
-      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
-
-(use-package vterm
-:config
-(setq shell-file-name "/bin/fish"
-      vterm-max-scrollback 5000))
-
-(use-package vterm-toggle
-  :after vterm
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                     (let ((buffer (get-buffer buffer-or-name)))
-                       (with-current-buffer buffer
-                         (or (equal major-mode 'vterm-mode)
-                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                  (display-buffer-reuse-window display-buffer-at-bottom)
-                  ;;(display-buffer-reuse-window display-buffer-in-direction)
-                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                  ;;(direction . bottom)
-                  ;;(dedicated . t) ;dedicated is supported in emacs27
-                  (reusable-frames . visible)
-                  (window-height . 0.3))))
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (use-package counsel
   :after ivy
+  :diminish
   :config (counsel-mode))
 
 (use-package ivy
@@ -364,6 +347,7 @@ one, an error is signaled."
   ;; ivy-resume resumes the last Ivy-based completion.
   (("C-c C-r" . ivy-resume)
    ("C-x B" . ivy-switch-buffer-other-window))
+  :diminish
   :custom
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
@@ -387,30 +371,54 @@ one, an error is signaled."
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 
-(use-package projectile
-  :diminish
-  :config 
-  (projectile-mode 1))
+(use-package json-mode
+  :ensure t)
 
-(use-package rainbow-mode
-  :diminish
-  :hook org-mode prog-mode)
+(use-package typescript-mode
+  :ensure t)
 
-(use-package diminish)
+(use-package lsp-mode
+  :ensure t
+  :hook (typescript-mode . lsp)
+  :config
+  (lsp-enable-which-key-integration t))
+  ;;(lsp-clients-typescript-tls-path)
 
 (use-package flycheck
   :ensure t
-  :defer t
+  :demand
   :diminish
   :init (global-flycheck-mode))
 
 (use-package rjsx-mode 
-  :ensure t)
-(add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  :ensure t
+  :after typescript-mode)
+(add-to-list 'auto-mode-alist '("\\.[jt]sx?\\'" . rjsx-mode))
+;; this stops the "<" symbol from auto-completing to "</>"
+(with-eval-after-load 'rjsx-mode
+  (define-key rjsx-mode-map "<" nil)
+  (define-key rjsx-mode-map (kbd "C-d") nil)
+  (define-key rjsx-mode-map ">" nil))
+;;(setq js-indent-level 2)
 
+;; (defun setup-tide-mode()
+;;   (interactive)
+;;   (tide-setup)
+;;   (flycheck-mode +1)
+;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
+;;   (tide-hl-identifier-mode +1)
+;;   (company-mode +1))
+;; (use-package tide
+;;   :ensure t
+;;   :after (typescript-mode company flycheck)
+;;   :hook ((typescript-mode . setup-tide-mode)
+;;          (typescript-mode . tide-hl-identifier-mode)
+;;          (before-save . tide-format-before-save)))
 
-
-
+(use-package prettier-js
+  :ensure t
+  :after (rjsx-mode flycheck)
+  :hook (rjsx-mode . prettier-js-mode))
 
 ;; (use-package lsp-mode
 ;;   :ensure
@@ -453,20 +461,56 @@ one, an error is signaled."
 
 (require 'org-tempo)
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(use-package projectile
+  :diminish
+  :config 
+  (projectile-mode 1))
 
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+(use-package rainbow-mode
+  :diminish
+  :hook org-mode prog-mode)
 
-(global-set-key (kbd "C-=") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+(use-package eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
 
-(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-(load-theme 'soft-charcoal t)
+;; eshell-syntax-highlighting -- adds fish/zsh-like syntax highlighting.
+;; eshell-rc-script -- your profile for eshell; like a bashrc for eshell.
+;; eshell-aliases-file -- sets an aliases file for the eshell.
+  
+(setq eshell-rc-script (concat user-emacs-directory "eshell/profile")
+      eshell-aliases-file (concat user-emacs-directory "eshell/aliases")
+      eshell-history-size 5000
+      eshell-buffer-maximum-lines 5000
+      eshell-hist-ignoredups t
+      eshell-scroll-to-bottom-on-input t
+      eshell-destroy-buffer-when-process-dies t
+      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+
+(use-package vterm
+:config
+(setq shell-file-name "/bin/fish"
+      vterm-max-scrollback 5000))
+
+(use-package vterm-toggle
+  :after vterm
+  :config
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                     (let ((buffer (get-buffer buffer-or-name)))
+                       (with-current-buffer buffer
+                         (or (equal major-mode 'vterm-mode)
+                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                  (display-buffer-reuse-window display-buffer-at-bottom)
+                  ;;(display-buffer-reuse-window display-buffer-in-direction)
+                  ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                  ;;(direction . bottom)
+                  ;;(dedicated . t) ;dedicated is supported in emacs27
+                  (reusable-frames . visible)
+                  (window-height . 0.3))))
 
 (use-package which-key
 :init 

@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/json-mode/json-mode.el

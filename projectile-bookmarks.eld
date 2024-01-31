@@ -1,1 +1,1 @@
-("~/.config/emacs/" "~/projects/house-dao/")
+("~/projects/house-dao/" "~/.config/emacs/")

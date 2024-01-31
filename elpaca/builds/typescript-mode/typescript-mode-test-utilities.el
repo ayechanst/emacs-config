@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/typescript/typescript-mode-test-utilities.el
