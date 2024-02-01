@@ -377,29 +377,50 @@ one, an error is signaled."
 (use-package typescript-mode
   :ensure t)
 
+;; (use-package rjsx-mode 
+;;   :ensure t
+;;   :after typescript-mode
+;;   :hook ((rjsx-mode . prettier-js-mode)
+;;          (rjsx-mode . tide-setup)
+;;          (rjsx-mode . tide-hl-identifier-mode)
+;;          (rjsx-mode . flycheck-mode))
+;;   :config
+;;     (add-to-list 'auto-mode-alist '("\\.tsx\\'" . rjsx-mode))
+;;     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+;; ;; this stops the "<" symbol from auto-completing to "</>"
+;;     (with-eval-after-load 'rjsx-mode
+;;       (define-key rjsx-mode-map "<" nil)
+;;       (define-key rjsx-mode-map (kbd "C-d") nil)
+;;       (define-key rjsx-mode-map ">" nil)))
+;; (setq js-indent-level 2)
+
+(use-package web-mode
+  :ensure t
+  :after typescript-mode
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  ;; Set up indentation and other configurations as needed
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :demand
+;;   :diminish
+;;   :init (global-flycheck-mode))
+
 (use-package lsp-mode
   :ensure t
   :hook (typescript-mode . lsp)
+  ;; :hook (web-mode . lsp)
   :config
   (lsp-enable-which-key-integration t))
+
   ;;(lsp-clients-typescript-tls-path)
-
-(use-package flycheck
-  :ensure t
-  :demand
-  :diminish
-  :init (global-flycheck-mode))
-
-(use-package rjsx-mode 
-  :ensure t
-  :after typescript-mode)
-(add-to-list 'auto-mode-alist '("\\.[jt]sx?\\'" . rjsx-mode))
-;; this stops the "<" symbol from auto-completing to "</>"
-(with-eval-after-load 'rjsx-mode
-  (define-key rjsx-mode-map "<" nil)
-  (define-key rjsx-mode-map (kbd "C-d") nil)
-  (define-key rjsx-mode-map ">" nil))
-;;(setq js-indent-level 2)
 
 ;; (defun setup-tide-mode()
 ;;   (interactive)
@@ -414,6 +435,13 @@ one, an error is signaled."
 ;;   :hook ((typescript-mode . setup-tide-mode)
 ;;          (typescript-mode . tide-hl-identifier-mode)
 ;;          (before-save . tide-format-before-save)))
+
+;; simple tide
+(use-package tide
+  :ensure t
+  :after (typescript-mode company) ;; removed flycheck from list
+  :hook ((typescript-mode . tide-setup)
+         (before-save . tide-format-before-save)))
 
 (use-package prettier-js
   :ensure t

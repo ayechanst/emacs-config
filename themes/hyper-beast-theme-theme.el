@@ -1,4 +1,4 @@
-;;; hyper-beast-theme.el --- Theme
+;;; hyper-beast-theme-theme.el --- Theme
 
 ;; Copyright (C) 2024 , Aye Chan
 
@@ -23,35 +23,35 @@
 ;; This file is not part of Emacs.
 
 ;;; Commentary:
-;;; hyper-beast theme created by Aye Chan in 2024
+;;; hyper-beast-theme theme created by Aye Chan in 2024
 
 ;;; Code:
 
-(deftheme hyper-beast)
+(deftheme hyper-beast-theme)
 (let ((class '((class color) (min-colors 89)))
-      (fg1 "#eb0000")
-      (fg2 "#d80000")
-      (fg3 "#c50000")
-      (fg4 "#b30000")
-      (fg6 "#f03d3d")
-      (bg1 "#09051a")
-      (bg2 "#1d192c")
-      (bg3 "#302d3f")
-      (bg4 "#444151")
-      (builtin "#d1ae00")
-      (keyword "#8ae232")
-      (const   "#db00eb")
-      (comment "#d1d1d1")
-      (func    "#00ffbf")
-      (str     "#ad53c6")
-      (type    "#00e1ff")
-      (var     "#d6d6d6")
-      (selection "#40a9dd")
-      (warning   "#ff0000")
-      (warning2  "#ff8800")
+      (fg1 "#f2d3fd")
+      (fg2 "#dfc2e9")
+      (fg3 "#cbb1d5")
+      (fg4 "#b8a0c0")
+      (fg6 "#f5defd")
+      (bg1 "#231a23")
+      (bg2 "#352c35")
+      (bg3 "#463f46")
+      (bg4 "#585158")
+      (builtin "#5d70fd")
+      (keyword "#e22c2c")
+      (const   "#8aa6c1")
+      (comment "#ffc766")
+      (func    "#4cc85a")
+      (str     "#6ccaea")
+      (type    "#d768df")
+      (var     "#7cd0c6")
+      (selection "#3b59ce")
+      (warning   "#ff6523")
+      (warning2  "#ff2424")
       (unspec   (when (>= emacs-major-version 29) 'unspecified)))
   (custom-theme-set-faces
-   'hyper-beast
+   'hyper-beast-theme
    `(default ((,class (:background ,bg1 :foreground ,fg1))))
    `(font-lock-builtin-face ((,class (:foreground ,builtin))))
    `(font-lock-comment-face ((,class (:foreground ,comment))))
@@ -247,23 +247,23 @@
    ;; Legacy
    (if (< emacs-major-version 22)
        (custom-theme-set-faces
-        'hyper-beast
+        'hyper-beast-theme
         `(show-paren-match-face ((,class (:background ,warning))))) ;; obsoleted in 22.1, removed 2016
      (custom-theme-set-faces
-      'hyper-beast
+      'hyper-beast-theme
       `(show-paren-match ((,class (:foreground ,bg1 :background ,str))))
       `(show-paren-mismatch ((,class (:foreground ,bg1 :background ,warning))))))
    ;; emacs >= 26.1
    (when (>= emacs-major-version 26)
      (custom-theme-set-faces
-      'hyper-beast
+      'hyper-beast-theme
       `(line-number ((t (:inherit fringe))))
       `(line-number-current-line ((t (:inherit fringe :foreground ,fg6 :weight bold))))))
 
   ;; emacs >= 27.1
   (when (>= emacs-major-version 27)
     (custom-theme-set-faces
-     'hyper-beast
+     'hyper-beast-theme
      `(tab-line              ((,class (:background ,bg2 :foreground ,fg4))))
      `(tab-line-tab          ((,class (:inherit tab-line))))
      `(tab-line-tab-inactive ((,class (:background ,bg2 :foreground ,fg4))))
@@ -271,13 +271,13 @@
      `(tab-line-highlight    ((,class (:background ,bg1 :foreground ,fg2))))))
  (when (>= emacs-major-version 28)
     (custom-theme-set-faces
-     'hyper-beast
+     'hyper-beast-theme
      `(line-number ((t (:inherit fringe))))
      `(line-number-current-line ((t (:inherit fringe :foreground ,fg6 :weight bold))))))
 ;; emacs >= 27.1
 (when (>= emacs-major-version 27)
   (custom-theme-set-faces
-   'hyper-beast
+   'hyper-beast-theme
    `(tab-line              ((,class (:background ,bg2 :foreground ,fg4))))
    `(tab-line-tab          ((,class (:inherit tab-line))))
    `(tab-line-tab-inactive ((,class (:background ,bg2 :foreground ,fg4))))
@@ -285,11 +285,11 @@
    `(tab-line-highlight    ((,class (:background ,bg1 :foreground ,fg2))))))
  (when (>= emacs-major-version 28)
     (custom-theme-set-faces
-     'hyper-beast
+     'hyper-beast-theme
      `(tab-line-tab-modified ((,class (:foreground ,warning2 :weight bold))))))
   (when (boundp 'font-lock-regexp-face)
     (custom-theme-set-faces
-    'hyper-beast
+    'hyper-beast-theme
     `(font-lock-regexp-face ((,class (:inherit font-lock-string-face :underline t)))))))
 
 ;;;###autoload
@@ -297,10 +297,10 @@
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory (file-name-directory load-file-name))))
 
-(provide-theme 'hyper-beast)
+(provide-theme 'hyper-beast-theme)
 
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; End:
 
-;;; hyper-beast-theme.el ends here
+;;; hyper-beast-theme-theme.el ends here

@@ -25,9 +25,10 @@
 - [[#ivy-counsel][Ivy (Counsel)]]
 - [[#language-support][Language Support]]
   - [[#language-modes][Language Modes]]
-  - [[#lsp-mode][LSP-Mode]]
-  - [[#flycheck][Flycheck]]
   - [[#rjsx-mode][RJSX Mode]]
+  - [[#web-mode][Web Mode]]
+  - [[#flycheck][Flycheck]]
+  - [[#lsp-mode][LSP-Mode]]
   - [[#tide][Tide]]
   - [[#prettier][Prettier]]
   - [[#rust][Rust]]
@@ -482,67 +483,90 @@ Instead of jumping around, this should make the screen scroll smoothly with evil
 *** JSON
 Something important for JSON idk ngl tbh.
 #+begin_src emacs-lisp
+
 (use-package json-mode
   :ensure t)
+
 #+end_src
+
 *** Typescript
 This should help out RJSX mode and Tide.
 #+begin_src emacs-lisp
+
 (use-package typescript-mode
   :ensure t)
+
 #+end_src
+
+** RJSX Mode
+This give syntax highlighting which is important.
+Causing a lot of problems mainly making things red and giving
+warnings on things that should be perfectly fine. 
+#+begin_src emacs-lisp
+
+;; (use-package rjsx-mode 
+;;   :ensure t
+;;   :after typescript-mode
+;;   :hook ((rjsx-mode . prettier-js-mode)
+;;          (rjsx-mode . tide-setup)
+;;          (rjsx-mode . tide-hl-identifier-mode)
+;;          (rjsx-mode . flycheck-mode))
+;;   :config
+;;     (add-to-list 'auto-mode-alist '("\\.tsx\\'" . rjsx-mode))
+;;     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+;; ;; this stops the "<" symbol from auto-completing to "</>"
+;;     (with-eval-after-load 'rjsx-mode
+;;       (define-key rjsx-mode-map "<" nil)
+;;       (define-key rjsx-mode-map (kbd "C-d") nil)
+;;       (define-key rjsx-mode-map ">" nil)))
+;; (setq js-indent-level 2)
+
+#+end_src
+** Web Mode
+Alternative to the rather annoying RJSX mode. Web mode covers more
+bases and is more broad than RJSX but is less specialized.
+#+begin_src emacs-lisp
+
+(use-package web-mode
+  :ensure t
+  :after typescript-mode
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  ;; Set up indentation and other configurations as needed
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
+
+#+end_src
+** Flycheck
+A tool that takes care of syntax checking and its also a linter.
+#+begin_src emacs-lisp
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :demand
+;;   :diminish
+;;   :init (global-flycheck-mode))
+
+#+end_src
+
 ** LSP-Mode
 Not required for RJSX mode or prettier, but its supposed to pair
 nicely with Tide.
 #+begin_src emacs-lisp
+
 (use-package lsp-mode
   :ensure t
   :hook (typescript-mode . lsp)
+  ;; :hook (web-mode . lsp)
   :config
   (lsp-enable-which-key-integration t))
+
   ;;(lsp-clients-typescript-tls-path)
-#+end_src
-Get LSP mode to work. the problem is that 'node' is not found
-in /usr/bin/env so we need to add it. Then we will be able
-to use ts-ls. The error message:
 
-/usr/bin/env: ‘node’: No such file or directory
-/usr/bin/env: ‘node’: No such file or directory
-
-Process ts-ls stderr<1> finished
-
-Process ts-ls stderr finished
-/usr/bin/env: ‘node’: No such file or directory
-/usr/bin/env: ‘node’: No such file or directory
-
-Process ts-ls stderr<1> finished
-
-Process ts-ls stderr finished
-
-setting the variable lsp-clients-typescript-tls-path might fix it.
-
-** Flycheck
-A tool that takes care of syntax checking and its also a linter.
-#+begin_src emacs-lisp
-(use-package flycheck
-  :ensure t
-  :demand
-  :diminish
-  :init (global-flycheck-mode))
-#+end_src
-** RJSX Mode
-This give syntax highlighting which is important.
-#+begin_src emacs-lisp
-(use-package rjsx-mode 
-  :ensure t
-  :after typescript-mode)
-(add-to-list 'auto-mode-alist '("\\.[jt]sx?\\'" . rjsx-mode))
-;; this stops the "<" symbol from auto-completing to "</>"
-(with-eval-after-load 'rjsx-mode
-  (define-key rjsx-mode-map "<" nil)
-  (define-key rjsx-mode-map (kbd "C-d") nil)
-  (define-key rjsx-mode-map ">" nil))
-;;(setq js-indent-level 2)
 #+end_src
 
 ** Tide
@@ -564,6 +588,14 @@ definitions.
 ;;   :hook ((typescript-mode . setup-tide-mode)
 ;;          (typescript-mode . tide-hl-identifier-mode)
 ;;          (before-save . tide-format-before-save)))
+
+;; simple tide
+
+(use-package tide
+  :ensure t
+  :after (typescript-mode company) ;; removed flycheck from list
+  :hook ((typescript-mode . tide-setup)
+         (before-save . tide-format-before-save)))
 
 #+end_src
 
