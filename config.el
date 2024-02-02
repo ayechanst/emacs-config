@@ -199,6 +199,7 @@ one, an error is signaled."
     "h" '(:ignore t :wk "Help")
     "h f" '(describe-function :wk "Describe function")
     "h v" '(describe-variable :wk "Describe variable")
+    "h t" '(load-theme :wk "Load theme")
     "h r r" '(reload-init-file :wk "Reload emacs config"))
 
   (ayechan/leader-keys
@@ -320,7 +321,7 @@ one, an error is signaled."
 (add-to-list 'default-frame-alist '(font . "JetBrains Mono-11"))
 
 ;; Uncomment the following line if line spacing needs adjusting
- (setq-default line-spacing 0.12)
+ (setq-default line-spacing 0)
 
 (setq redisplay-dont-pause t
   scroll-margin 1
@@ -331,8 +332,15 @@ one, an error is signaled."
 (setq scroll-margin 4)
 
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+;; themes from doom emacs
+(use-package doom-themes
+  :config
+  (setq doom-theme-enable-bold t
+        doom-theme-enable-italic t))
+;; custom themes from a theme creator
 (load-theme 'hyper-beast-2 t)
-;; (load-theme 'soft-charcoal t)
+
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
@@ -396,26 +404,27 @@ one, an error is signaled."
         web-mode-enable-auto-pairing t
         web-mode-enable-css-colorization t))
 
+;; (use-package tide
+;;   :ensure t
+;;   :diminish
+;;   :after (typescript-mode company) ;; removed flycheck from list
+;;   :hook ((typescript-mode . tide-setup)))
+
+;; This Tide config is more robust but less stable
+(defun setup-tide-mode()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode enabled))
+  (tide-hl-identifier-mode +1)
+  (company-mode +1))
 (use-package tide
   :ensure t
   :diminish
-  :after (typescript-mode company) ;; removed flycheck from list
-  :hook ((typescript-mode . tide-setup)))
-
-;; This Tide config is more robust but less stable
-;; (defun setup-tide-mode()
-;;   (interactive)
-;;   (tide-setup)
-;;   (flycheck-mode +1)
-;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
-;;   (tide-hl-identifier-mode +1)
-;;   (company-mode +1))
-;; (use-package tide
-;;   :ensure t
-;;   :after (typescript-mode company flycheck)
-;;   :hook ((typescript-mode . setup-tide-mode)
-;;          (typescript-mode . tide-hl-identifier-mode)
-;;          (before-save . tide-format-before-save)))
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . setup-tide-mode)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
 
 (use-package prettier-js
   :ensure t
@@ -442,15 +451,17 @@ one, an error is signaled."
 ;; (use-package flycheck
 ;;   :ensure t
 ;;   :demand
-;;   :diminish
+;;   ;; :diminish
 ;;   :init (global-flycheck-mode))
 
 (use-package lsp-mode
   :ensure t
-  :hook (typescript-mode . lsp)
+  :hook ((typescript-mode . lsp)
+         (solidity-mode . lsp))
   ;; :hook (web-mode . lsp)
   :config
   (lsp-enable-which-key-integration t))
+(setq lsp-command '("bash" "-c"))
 
 ;; (use-package lsp-mode
 ;;   :ensure
@@ -479,6 +490,23 @@ one, an error is signaled."
 ;;   (lsp-ui-peek-always-show t)
 ;;   (lsp-ui-sideline-show-hover t)
 ;;   (lsp-ui-doc-enable nil))
+
+(use-package solidity-mode
+  :commands lsp
+  :hook ((solidity-mode . lsp))
+  :config
+  (setq lsp-solidity-server '("nomicfoundation-solidity-language-server" "--stdio")))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+
+(use-package company-lsp
+  :commands company-lsp)
+
+(add-hook 'solidity-mode-hook (lambda ()
+                                (setq-local indent-tabs-mode nil)
+                                (progn
+                                  (lsp))))
 
 (use-package toc-org
     :commands toc-org-enable
@@ -518,7 +546,7 @@ one, an error is signaled."
       eshell-hist-ignoredups t
       eshell-scroll-to-bottom-on-input t
       eshell-destroy-buffer-when-process-dies t
-      eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
+      eshell-visual-commands'("bash" "htop" "ssh" "top" "zsh"))
 
 (use-package vterm
 :config

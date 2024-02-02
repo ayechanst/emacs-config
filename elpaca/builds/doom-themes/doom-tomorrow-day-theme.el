@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/themes/themes/doom-tomorrow-day-theme.el
