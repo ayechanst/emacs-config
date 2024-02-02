@@ -24,14 +24,11 @@
   - [[#zooming-in-and-out][Zooming In and Out]]
 - [[#ivy-counsel][Ivy (Counsel)]]
 - [[#language-support][Language Support]]
-  - [[#language-modes][Language Modes]]
-  - [[#rjsx-mode][RJSX Mode]]
-  - [[#web-mode][Web Mode]]
-  - [[#flycheck][Flycheck]]
-  - [[#lsp-mode][LSP-Mode]]
-  - [[#tide][Tide]]
-  - [[#prettier][Prettier]]
+  - [[#json][JSON]]
+  - [[#typescript][Typescript]]
+  - [[#general-language-support][General Language Support]]
   - [[#rust][Rust]]
+  - [[#solidity][Solidity]]
 - [[#org-mode][Org Mode]]
   - [[#table-of-contents][Table of Contents]]
   - [[#bullets][Bullets]]
@@ -372,15 +369,20 @@ This package makes it so minor modes don't appear on the mode line.
 
 ** Disable Menubar, Toolbars, and Scrollbars
 #+begin_src emacs-lisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
 #+end_src
 
 ** Display Line Numbers and Truncated Lines
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode 1)
-  (global-visual-line-mode t)
+
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
+(setq-default truncate-lines nil)
+
 #+end_src
 
 ** Fonts 
@@ -431,8 +433,9 @@ Instead of jumping around, this should make the screen scroll smoothly with evil
 #+end_src
 ** Theme
 #+begin_src emacs-lisp
-  (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-  (load-theme 'soft-charcoal t)
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'hyper-beast-2 t)
+;; (load-theme 'soft-charcoal t)
 #+end_src
 
 ** Zooming In and Out
@@ -479,9 +482,8 @@ Instead of jumping around, this should make the screen scroll smoothly with evil
                                'ivy-rich-switch-buffer-transformer))
 #+end_src
 * Language Support
-** Language Modes
-*** JSON
-Something important for JSON idk ngl tbh.
+** JSON
+Enables syntax highlighting for JSON.
 #+begin_src emacs-lisp
 
 (use-package json-mode
@@ -489,16 +491,80 @@ Something important for JSON idk ngl tbh.
 
 #+end_src
 
-*** Typescript
-This should help out RJSX mode and Tide.
+** Typescript
+Give syntax highlighting to .js related files.
 #+begin_src emacs-lisp
 
 (use-package typescript-mode
-  :ensure t)
+  :ensure t
+  :mode (("\\.js\\'" . typescript-mode)
+         ("\\.ts\\'" . typescript-mode)
+         ("\\.jsx\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-mode)))
 
 #+end_src
 
-** RJSX Mode
+*** Web Mode
+Alternative to the rather annoying RJSX mode. Web mode covers more
+bases and is more broad than RJSX but is less specialized.
+#+begin_src emacs-lisp
+
+(use-package web-mode
+  :ensure t
+  :after typescript-mode
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  ;; Set up indentation and other configurations as needed
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
+
+#+end_src
+*** Tide
+Stands for "TypeScript Interactive Development Environment". Tide
+is responsible for autocompletion, type checking, and jumping to 
+definitions.
+#+begin_src emacs-lisp
+
+(use-package tide
+  :ensure t
+  :diminish
+  :after (typescript-mode company) ;; removed flycheck from list
+  :hook ((typescript-mode . tide-setup)))
+
+;; This Tide config is more robust but less stable
+;; (defun setup-tide-mode()
+;;   (interactive)
+;;   (tide-setup)
+;;   (flycheck-mode +1)
+;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
+;;   (tide-hl-identifier-mode +1)
+;;   (company-mode +1))
+;; (use-package tide
+;;   :ensure t
+;;   :diminish
+;;   :after (typescript-mode company flycheck)
+;;   :hook ((typescript-mode . setup-tide-mode)
+;;          (typescript-mode . tide-hl-identifier-mode)
+;;          (before-save . tide-format-before-save)))
+
+#+end_src
+
+*** Prettier
+Makes everything more pretty no cap
+#+begin_src emacs-lisp
+
+(use-package prettier-js
+  :ensure t
+  :after (web-mode)
+  :hook (web-mode . prettier-js-mode))
+
+#+end_src
+
+*** RJSX Mode
 This give syntax highlighting which is important.
 Causing a lot of problems mainly making things red and giving
 warnings on things that should be perfectly fine. 
@@ -522,26 +588,8 @@ warnings on things that should be perfectly fine.
 ;; (setq js-indent-level 2)
 
 #+end_src
-** Web Mode
-Alternative to the rather annoying RJSX mode. Web mode covers more
-bases and is more broad than RJSX but is less specialized.
-#+begin_src emacs-lisp
-
-(use-package web-mode
-  :ensure t
-  :after typescript-mode
-  :mode (("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
-  :config
-  ;; Set up indentation and other configurations as needed
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2
-        web-mode-enable-auto-pairing t
-        web-mode-enable-css-colorization t))
-
-#+end_src
-** Flycheck
+** General Language Support
+*** Flycheck
 A tool that takes care of syntax checking and its also a linter.
 #+begin_src emacs-lisp
 
@@ -553,7 +601,7 @@ A tool that takes care of syntax checking and its also a linter.
 
 #+end_src
 
-** LSP-Mode
+*** LSP-Mode
 Not required for RJSX mode or prettier, but its supposed to pair
 nicely with Tide.
 #+begin_src emacs-lisp
@@ -564,49 +612,6 @@ nicely with Tide.
   ;; :hook (web-mode . lsp)
   :config
   (lsp-enable-which-key-integration t))
-
-  ;;(lsp-clients-typescript-tls-path)
-
-#+end_src
-
-** Tide
-Stands for "TypeScript Interactive Development Environment". Tide
-is responsible for autocompletion, type checking, and jumping to 
-definitions.
-#+begin_src emacs-lisp
-
-;; (defun setup-tide-mode()
-;;   (interactive)
-;;   (tide-setup)
-;;   (flycheck-mode +1)
-;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
-;;   (tide-hl-identifier-mode +1)
-;;   (company-mode +1))
-;; (use-package tide
-;;   :ensure t
-;;   :after (typescript-mode company flycheck)
-;;   :hook ((typescript-mode . setup-tide-mode)
-;;          (typescript-mode . tide-hl-identifier-mode)
-;;          (before-save . tide-format-before-save)))
-
-;; simple tide
-
-(use-package tide
-  :ensure t
-  :after (typescript-mode company) ;; removed flycheck from list
-  :hook ((typescript-mode . tide-setup)
-         (before-save . tide-format-before-save)))
-
-#+end_src
-
-** Prettier
-Makes everything more pretty no cap
-#+begin_src emacs-lisp
-
-(use-package prettier-js
-  :ensure t
-  :after (rjsx-mode flycheck)
-  :hook (rjsx-mode . prettier-js-mode))
 
 #+end_src
 
@@ -643,6 +648,7 @@ LSP for rust not much more to say.
 ;;   (lsp-ui-doc-enable nil))
 
 #+end_src
+** Solidity
 * Org Mode
 ** Table of Contents
 #+begin_src emacs-lisp

@@ -290,6 +290,7 @@ one, an error is signaled."
 
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
+(setq-default truncate-lines nil)
 
 (set-face-attribute 'default nil
                     :font "JetBrains Mono"
@@ -330,7 +331,8 @@ one, an error is signaled."
 (setq scroll-margin 4)
 
 (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-(load-theme 'soft-charcoal t)
+(load-theme 'hyper-beast-2 t)
+;; (load-theme 'soft-charcoal t)
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
@@ -375,7 +377,50 @@ one, an error is signaled."
   :ensure t)
 
 (use-package typescript-mode
-  :ensure t)
+  :ensure t
+  :mode (("\\.js\\'" . typescript-mode)
+         ("\\.ts\\'" . typescript-mode)
+         ("\\.jsx\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-mode)))
+
+(use-package web-mode
+  :ensure t
+  :after typescript-mode
+  :mode (("\\.tsx\\'" . web-mode)
+         ("\\.jsx\\'" . web-mode))
+  :config
+  ;; Set up indentation and other configurations as needed
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-css-colorization t))
+
+(use-package tide
+  :ensure t
+  :diminish
+  :after (typescript-mode company) ;; removed flycheck from list
+  :hook ((typescript-mode . tide-setup)))
+
+;; This Tide config is more robust but less stable
+;; (defun setup-tide-mode()
+;;   (interactive)
+;;   (tide-setup)
+;;   (flycheck-mode +1)
+;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
+;;   (tide-hl-identifier-mode +1)
+;;   (company-mode +1))
+;; (use-package tide
+;;   :ensure t
+;;   :after (typescript-mode company flycheck)
+;;   :hook ((typescript-mode . setup-tide-mode)
+;;          (typescript-mode . tide-hl-identifier-mode)
+;;          (before-save . tide-format-before-save)))
+
+(use-package prettier-js
+  :ensure t
+  :after (web-mode)
+  :hook (web-mode . prettier-js-mode))
 
 ;; (use-package rjsx-mode 
 ;;   :ensure t
@@ -394,19 +439,6 @@ one, an error is signaled."
 ;;       (define-key rjsx-mode-map ">" nil)))
 ;; (setq js-indent-level 2)
 
-(use-package web-mode
-  :ensure t
-  :after typescript-mode
-  :mode (("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
-  :config
-  ;; Set up indentation and other configurations as needed
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2
-        web-mode-enable-auto-pairing t
-        web-mode-enable-css-colorization t))
-
 ;; (use-package flycheck
 ;;   :ensure t
 ;;   :demand
@@ -419,34 +451,6 @@ one, an error is signaled."
   ;; :hook (web-mode . lsp)
   :config
   (lsp-enable-which-key-integration t))
-
-  ;;(lsp-clients-typescript-tls-path)
-
-;; (defun setup-tide-mode()
-;;   (interactive)
-;;   (tide-setup)
-;;   (flycheck-mode +1)
-;;   (setq flycheck-check-syntax-automatically '(save mode enabled))
-;;   (tide-hl-identifier-mode +1)
-;;   (company-mode +1))
-;; (use-package tide
-;;   :ensure t
-;;   :after (typescript-mode company flycheck)
-;;   :hook ((typescript-mode . setup-tide-mode)
-;;          (typescript-mode . tide-hl-identifier-mode)
-;;          (before-save . tide-format-before-save)))
-
-;; simple tide
-(use-package tide
-  :ensure t
-  :after (typescript-mode company) ;; removed flycheck from list
-  :hook ((typescript-mode . tide-setup)
-         (before-save . tide-format-before-save)))
-
-(use-package prettier-js
-  :ensure t
-  :after (rjsx-mode flycheck)
-  :hook (rjsx-mode . prettier-js-mode))
 
 ;; (use-package lsp-mode
 ;;   :ensure
