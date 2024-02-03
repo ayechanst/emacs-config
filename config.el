@@ -481,6 +481,12 @@ one, an error is signaled."
 ;;   (lsp-ui-sideline-show-hover t)
 ;;   (lsp-ui-doc-enable nil))
 
+(use-package rustic
+  :ensure t
+  :config
+  (setq lsp-rust 'rust-analyzer)
+  (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+
 (use-package solidity-mode
   :commands lsp
   :hook ((solidity-mode . lsp)

@@ -668,6 +668,17 @@ LSP for rust not much more to say.
 ;;   (lsp-ui-doc-enable nil))
 
 #+end_src
+
+This is Rustic Mode, a major mode in Emacs for editing Rust.
+#+begin_src emacs-lisp
+
+(use-package rustic
+  :ensure t
+  :config
+  (setq lsp-rust 'rust-analyzer)
+  (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+
+#+end_src
 ** Solidity
 Syntax highlighting for Solidity
 #+begin_src emacs-lisp

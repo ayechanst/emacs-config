@@ -1,1 +1,1 @@
-("~/projects/house-dao/" "~/.config/emacs/" "~/speedRunETh/se-2-challenges/" "~/projects/debt-manager/")
+("~/substreams/sushiSwap-Substreams/" "~/projects/house-dao/" "~/.config/emacs/" "~/speedRunETh/se-2-challenges/" "~/projects/debt-manager/")
