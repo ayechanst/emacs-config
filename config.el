@@ -121,28 +121,14 @@ one, an error is signaled."
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-;; Install a package via the elpaca macro
-;; See the "recipes" section of the manual for more details.
-;; (elpaca example-package)
-;; Install use-package support
 (elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
-;; Block until current queue processed.
 (elpaca-wait)
-;;When installing a package which modifies a form used at the top-level
-;;(e.g. a package which adds a use-package key word),
-;;use `elpaca-wait' to block until that package has been installed/configured.
-;;For example:
-;;(use-package general :demand t)
-;;(elpaca-wait)
-;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
      :init
      (setq evil-want-integration t)
-     (setq evil-want-keybinding nil)
+     ;; (setq evil-want-keybinding nil)
      (setq evil-vsplit-window-below t)
      (evil-mode))
 (use-package evil-collection
@@ -151,13 +137,7 @@ one, an error is signaled."
 (setq evil-collection-mode-list '(dashboard dired ibuffer))
 (evil-collection-init))
 (use-package evil-tutor)
-;;Turns off elpaca-use-package-mode current declaration
-;;Note this will cause the declaration to be interpreted immediately (not deferred).
-;;Useful for configuring built-in emacs features.
 (use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
-
-;; Don't install anything. Defer execution of BODY
-;; (elpaca nil (message "deferred"))
 
 (with-eval-after-load 'evil
   (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up))
@@ -448,11 +428,16 @@ one, an error is signaled."
 ;;       (define-key rjsx-mode-map ">" nil)))
 ;; (setq js-indent-level 2)
 
-;; (use-package flycheck
-;;   :ensure t
-;;   :demand
-;;   ;; :diminish
-;;   :init (global-flycheck-mode))
+(use-package flycheck
+  :ensure t
+  :demand
+  ;; :diminish
+  :init (global-flycheck-mode))
+
+(use-package lsp-flycheck
+  :after lsp
+  :hook (lsp-mode . lsp-flycheck-enable)
+  :commands lsp-flycheck-enable)
 
 (use-package lsp-mode
   :ensure t
@@ -462,6 +447,11 @@ one, an error is signaled."
   :config
   (lsp-enable-which-key-integration t))
 (setq lsp-command '("bash" "-c"))
+
+(use-package smartparens
+  :ensure t
+  :config
+  (smartparens-global-mode 1))
 
 ;; (use-package lsp-mode
 ;;   :ensure
@@ -493,7 +483,8 @@ one, an error is signaled."
 
 (use-package solidity-mode
   :commands lsp
-  :hook ((solidity-mode . lsp))
+  :hook ((solidity-mode . lsp)
+         (solidity-mode . lsp-flycheck-enable))
   :config
   (setq lsp-solidity-server '("nomicfoundation-solidity-language-server" "--stdio")))
 

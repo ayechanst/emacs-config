@@ -1,1 +1,1 @@
-("~/.config/emacs/" "~/projects/house-dao/" "~/projects/debt-manager/")
+("~/projects/house-dao/" "~/.config/emacs/" "~/speedRunETh/se-2-challenges/" "~/projects/debt-manager/")
