@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/emacs-emoji-cheat-sheet-plus/emoji-cheat-sheet-plus.el

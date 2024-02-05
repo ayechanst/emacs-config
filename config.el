@@ -128,7 +128,7 @@ one, an error is signaled."
 (use-package evil
      :init
      (setq evil-want-integration t)
-     ;; (setq evil-want-keybinding nil)
+     (setq evil-want-keybinding nil)
      (setq evil-vsplit-window-below t)
      (evil-mode))
 (use-package evil-collection
@@ -229,6 +229,10 @@ one, an error is signaled."
   (ayechan/leader-keys
     "f" '(:ignore t :wk "File") ;; sets the next key
     "f f" '(find-file :wk "Find file")))
+
+  (ayechan/leader-keys
+    "i" '(:ignore i :wk "Insert")
+    "i e" '(emoji-insert :wk "Insert emoji"))
 
 (defun reload-init-file ()
   (interactive)
@@ -434,10 +438,10 @@ one, an error is signaled."
   ;; :diminish
   :init (global-flycheck-mode))
 
-(use-package lsp-flycheck
-  :after lsp
-  :hook (lsp-mode . lsp-flycheck-enable)
-  :commands lsp-flycheck-enable)
+;; (use-package lsp-flycheck
+;;   :after lsp
+;;   :hook (lsp-mode . lsp-flycheck-enable)
+;;   :commands lsp-flycheck-enable)
 
 (use-package lsp-mode
   :ensure t
@@ -452,6 +456,9 @@ one, an error is signaled."
   :ensure t
   :config
   (smartparens-global-mode 1))
+
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
 
 ;; (use-package lsp-mode
 ;;   :ensure
@@ -481,11 +488,27 @@ one, an error is signaled."
 ;;   (lsp-ui-sideline-show-hover t)
 ;;   (lsp-ui-doc-enable nil))
 
-(use-package rustic
-  :ensure t
-  :config
-  (setq lsp-rust 'rust-analyzer)
-  (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+;; (use-package rustic
+;;   :ensure t
+;;   :config
+;;   (setq lsp-rust 'rust-analyzer)
+;;   (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :init (global-flycheck-mode))
+
+;; (use-package flycheck-rust
+;;   :ensure t
+;;   :after flycheck
+;;   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+;; (require 'package)
+;; (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+;;                          ("gnu" . "http://elpa.gnu.org/packages/")))
+;; (package-initialize)
+;; (package-refresh-contents)
+;; (use-package rustic)
 
 (use-package solidity-mode
   :commands lsp

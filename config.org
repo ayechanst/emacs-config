@@ -120,6 +120,7 @@ one, an error is signaled."
 Stands for "Complete Anything". Its an auto-completion framework
 that give context-aware suggestions. Its extensible and OP apperently.
 #+begin_src emacs-lisp
+
 (use-package company
   :defer 2
   :diminish
@@ -135,6 +136,7 @@ that give context-aware suggestions. Its extensible and OP apperently.
   :after company
   :diminish
   :hook (company-mode . company-box-mode))
+
 #+end_src
 * Elpaca Package Manager
 
@@ -189,7 +191,7 @@ that give context-aware suggestions. Its extensible and OP apperently.
 (use-package evil
      :init
      (setq evil-want-integration t)
-     ;; (setq evil-want-keybinding nil)
+     (setq evil-want-keybinding nil)
      (setq evil-vsplit-window-below t)
      (evil-mode))
 (use-package evil-collection
@@ -299,6 +301,11 @@ This changes the emacs "global prefix" C-u to scroll up in vim.
   (ayechan/leader-keys
     "f" '(:ignore t :wk "File") ;; sets the next key
     "f f" '(find-file :wk "Find file")))
+
+  (ayechan/leader-keys
+    "i" '(:ignore i :wk "Insert")
+    "i e" '(emoji-insert :wk "Insert emoji"))
+
 #+end_src
 
 ** Reloads emacs
@@ -601,10 +608,10 @@ A tool that takes care of syntax checking and its also a linter.
 LSP Flycheck just makes Flycheck more OP
 #+begin_src emacs-lisp
 
-(use-package lsp-flycheck
-  :after lsp
-  :hook (lsp-mode . lsp-flycheck-enable)
-  :commands lsp-flycheck-enable)
+;; (use-package lsp-flycheck
+;;   :after lsp
+;;   :hook (lsp-mode . lsp-flycheck-enable)
+;;   :commands lsp-flycheck-enable)
 
 #+end_src
 
@@ -632,6 +639,14 @@ nicely with Tide.
   :ensure t
   :config
   (smartparens-global-mode 1))
+
+#+end_src
+
+*** Emojis
+#+begin_src emacs-lisp
+
+(use-package emojify
+  :hook (after-init . global-emojify-mode))
 
 #+end_src
 
@@ -672,13 +687,35 @@ LSP for rust not much more to say.
 This is Rustic Mode, a major mode in Emacs for editing Rust.
 #+begin_src emacs-lisp
 
-(use-package rustic
-  :ensure t
-  :config
-  (setq lsp-rust 'rust-analyzer)
-  (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+;; (use-package rustic
+;;   :ensure t
+;;   :config
+;;   (setq lsp-rust 'rust-analyzer)
+;;   (add-hook 'rustic-mode-hook #'rustic-format-on-save))
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :init (global-flycheck-mode))
+
+;; (use-package flycheck-rust
+;;   :ensure t
+;;   :after flycheck
+;;   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 #+end_src
+
+This is from the Rustic docs:
+#+begin_src emacs-lisp
+
+;; (require 'package)
+;; (setq package-archives '(("melpa" . "http://melpa.org/packages/")
+;;                          ("gnu" . "http://elpa.gnu.org/packages/")))
+;; (package-initialize)
+;; (package-refresh-contents)
+;; (use-package rustic)
+
+#+end_src
+
 ** Solidity
 Syntax highlighting for Solidity
 #+begin_src emacs-lisp

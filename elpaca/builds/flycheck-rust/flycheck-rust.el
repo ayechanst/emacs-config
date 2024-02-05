@@ -1,0 +1,1 @@
+/home/santun/.config/emacs/elpaca/repos/flycheck-rust/flycheck-rust.el

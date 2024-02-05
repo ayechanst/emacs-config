@@ -1,1 +1,1 @@
-("~/substreams/sushiSwap-Substreams/" "~/projects/house-dao/" "~/.config/emacs/" "~/speedRunETh/se-2-challenges/" "~/projects/debt-manager/")
+("~/tests/speedRunEth-challenges/challenge-0-simple-nft/" "~/speedRunETh/simple-nft-additions/" "~/speedRunETh/se-2-challenges/" "~/.config/emacs/" "~/substreams/sushiSwap-Substreams/" "~/projects/house-dao/" "~/projects/debt-manager/")
